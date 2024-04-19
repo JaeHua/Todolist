@@ -4,7 +4,6 @@ ToolWeb
 │  go.mod
 │  go.sum
 │  main.go
-│  te.md
 │  
 ├─.idea
 │      .gitignore
