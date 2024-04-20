@@ -47,7 +47,8 @@ func main() {
 	r.LoadHTMLFiles("template/homepage.html", "template/todolist.html")
 
 	//告诉gin去找静态资源
-	//r.Static("/static", "src/TodoList/static")
+	r.Static("/static", "./static")
+
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "homepage.html", nil)
 	})
