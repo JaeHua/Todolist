@@ -36,40 +36,66 @@
                 <input type="text" id="title" name="title" class="flex-grow mr-2 py-2 px-3 border border-gray-300 rounded" placeholder="输入新的Todo">
 
                 <button  onclick="handleClick()" id="addTodo" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >
-                Add
+                    Add
                 </button>
 
             </div>
 
-            <div class="grid grid-cols-3 gap-4 mb-4">
-                <p class="font-semibold">ID</p>
-                <p class="font-semibold">Title</p>
-                <p class="font-semibold">Status</p>
-            </div>
-            <ul id="todoList" class="divide-y divide-gray-200">
-                <!-- Todo项目将在这里动态添加 -->
-            </ul>
+            <table class="w-full mb-4" >
+                <thead>
+                <tr>
+                    <th class="font-semibold">ID</th>
+                    <th class="font-semibold">Title</th>
+                    <th class="font-semibold">Action</th>
+                </tr>
+                </thead>
+                <tbody id="datalist" class="divide-y divide-gray-200">
+
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
 <script>
-    function handleClick() {
-        var title = document.getElementById('title').value;
-        var data = {
-            title: title
-        }
-        fetch('/v1/todo', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        showSuccessAlert()
+<!--    页面刷新绑定数据展示-->
+    window.onload = function (){
+        addTodoToList()
     }
+    // 按钮事件
+    function handleClick() {
+    //获取输入框的值
+    var title = document.getElementById('title').value;
+
+    if (title === '') {
+        alert('添加失败：Title不能为空');
+        return;
+    }
+
+    var data = {
+        title: title
+    };
+    //封装成json返回给后端
+    fetch('/v1/todo', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+        .then(response => response.json())
+        // 必须这种异步操作，不然不能及时显示
+        .then(() => {
+            showSuccessAlert();
+            clearInputField();
+            addTodoToList();
+        })
+        .catch(error => {
+            console.error('添加失败:', error);
+        });
+}
+    //为了美观，成功有提示框
     function showSuccessAlert() {
-        // create alert element
         const alert = document.createElement('div');
         alert.classList.add(
             'fixed',
@@ -81,24 +107,73 @@
             'bg-green-500',
             'text-white',
             'p-4',
-            'rounded-lg',
-            'shadow-lg'
+            'shadow-lg',
+            'rounded'
         );
 
-        // add text
+        const closeButton = document.createElement('button');
+        //关闭提示框的按钮
+        closeButton.innerHTML = '&times;';
+        closeButton.classList.add('absolute',  'right-0', 'text-green', 'text-lg', 'rounded-full',  'p-1');
+        closeButton.style.width = '24px';
+        closeButton.style.height = '24px';
+        closeButton.style.lineHeight = '1';
+        closeButton.addEventListener('click', () => {
+            document.body.removeChild(alert);
+        });
+
         const text = document.createElement('p');
         text.textContent = 'Todo added successfully';
         text.classList.add('text-lg', 'font-bold');
 
+        alert.appendChild(closeButton);
         alert.appendChild(text);
 
-        // append to body
         document.body.appendChild(alert);
-
-        // remove after 3s
+        //延时三秒
         setTimeout(() => {
             document.body.removeChild(alert);
         }, 3000);
+
+    }
+    //清除输入框
+    function clearInputField() {
+        document.getElementById('title').value = '';
+    }
+
+        //显示后端数据库的数据
+    function addTodoToList() {
+        fetch('/v1/todo')
+            .then(response => response.json())
+            .then(data => {
+                const todoList = document.getElementById('datalist');
+                todoList.innerHTML = '';
+
+                data.forEach(todo => {
+                    const tr = document.createElement('tr');
+
+                    const id = document.createElement('th');
+                    id.textContent = todo.ID;
+                    id.classList.add('text-sm', 'font-semibold', 'text-gray-900');
+
+                    const title = document.createElement('th');
+                    title.textContent = todo.title;
+                    title.classList.add('text-sm', 'font-semibold', 'text-gray-900', 'ml-4');
+
+                    // const action = document.createElement('th');
+                    // const deleteButton = document.createElement('button');
+                    // deleteButton.textContent = 'Delete';
+                    // deleteButton.classList.add('bg-red-500', 'hover:bg-red-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded');
+                    // // deleteButton.onclick = () => handleDelete(todo.ID);
+                    // action.appendChild(deleteButton);
+
+                    tr.appendChild(id);
+                    tr.appendChild(title);
+                    // tr.appendChild(action);
+
+                    todoList.appendChild(tr);
+                });
+            });
     }
 
 </script>

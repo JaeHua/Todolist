@@ -75,11 +75,16 @@ func main() {
 			} else {
 				c.JSON(http.StatusOK, todo)
 			}
-			//3.返回响应
+
 		})
 		//查看所有的代办事项和某一个代办事项
 		v1Group.GET("/todo", func(c *gin.Context) {
-
+			var todoList []Todo
+			if err = DB.Find(&todoList).Error; err != nil {
+				c.JSON(http.StatusOK, err.Error())
+			} else {
+				c.JSON(http.StatusOK, todoList)
+			}
 		})
 
 		v1Group.GET("/todo/:id", func(c *gin.Context) {
