@@ -31,11 +31,20 @@
     <div class="mx-auto w-7/12 mt-8"> <!-- 新增的容器div -->
         <div class="w-full bg-white shadow-lg rounded-lg p-6">
             <h1 class="text-2xl font-bold mb-4">TodoList</h1>
+
             <div class="flex mb-4">
-                <input type="text" id="newTodo" class="flex-grow mr-2 py-2 px-3 border border-gray-300 rounded" placeholder="输入新的Todo">
-                <button id="addTodo" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Add
+                <input type="text" id="title" name="title" class="flex-grow mr-2 py-2 px-3 border border-gray-300 rounded" placeholder="输入新的Todo">
+
+                <button  onclick="handleClick()" id="addTodo" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >
+                Add
                 </button>
+
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 mb-4">
+                <p class="font-semibold">ID</p>
+                <p class="font-semibold">Title</p>
+                <p class="font-semibold">Status</p>
             </div>
             <ul id="todoList" class="divide-y divide-gray-200">
                 <!-- Todo项目将在这里动态添加 -->
@@ -44,31 +53,53 @@
     </div>
 </div>
 
-
 <script>
-    const newTodoInput = document.getElementById('newTodo');
-    const addTodoButton = document.getElementById('addTodo');
-    const todoList = document.getElementById('todoList');
-
-    addTodoButton.addEventListener('click', () => {
-        const newTodo = newTodoInput.value.trim();
-        if (newTodo) {
-            const li = document.createElement('li');
-            li.className = 'py-3 flex justify-between items-center';
-
-            const span = document.createElement('span');
-            span.textContent = newTodo;
-
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'text-red-500 hover:text-red-700';
-            deleteButton.innerHTML = '&#10005;';
-            deleteButton.addEventListener('click', () => li.remove());
-
-            li.appendChild(span);
-            li.appendChild(deleteButton);
-            todoList.appendChild(li);
-            newTodoInput.value = '';
+    function handleClick() {
+        var title = document.getElementById('title').value;
+        var data = {
+            title: title
         }
-    });
+        fetch('/v1/todo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        showSuccessAlert()
+    }
+    function showSuccessAlert() {
+        // create alert element
+        const alert = document.createElement('div');
+        alert.classList.add(
+            'fixed',
+            'top-1/2',
+            'left-1/2',
+            'transform',
+            '-translate-x-1/2',
+            '-translate-y-1/2',
+            'bg-green-500',
+            'text-white',
+            'p-4',
+            'rounded-lg',
+            'shadow-lg'
+        );
+
+        // add text
+        const text = document.createElement('p');
+        text.textContent = 'Todo added successfully';
+        text.classList.add('text-lg', 'font-bold');
+
+        alert.appendChild(text);
+
+        // append to body
+        document.body.appendChild(alert);
+
+        // remove after 3s
+        setTimeout(() => {
+            document.body.removeChild(alert);
+        }, 3000);
+    }
+
 </script>
 </body>
