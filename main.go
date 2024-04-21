@@ -5,6 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"net/http"
+	"strings"
 )
 
 var (
@@ -15,7 +16,7 @@ var (
 type Todo struct {
 	ID     int    `gorm:"primaryKey"`
 	Title  string `json:"title"`
-	Status bool   `json:"status"`
+	Status bool   `json:"status" gorm:"default:true"`
 }
 
 // initMySQL
@@ -88,15 +89,37 @@ func main() {
 			}
 		})
 
-		v1Group.GET("/todo/:id", func(c *gin.Context) {
-
-		})
 		//修改
 		v1Group.PUT("/todo/:id", func(c *gin.Context) {
+			id := strings.TrimPrefix(c.Param("id"), ":") //奇奇怪怪去除冒号
 
+			var todo Todo
+			if err = DB.Debug().Where("id=?", id).First(&todo).Error; err != nil {
+				c.JSON(http.StatusOK, err.Error())
+				return
+			}
+			// 切换状态
+			if todo.Status {
+				todo.Status = false
+			} else {
+				todo.Status = true
+			}
+			if err = DB.Save(&todo).Error; err != nil {
+				c.JSON(http.StatusOK, err.Error())
+			} else {
+				c.JSON(http.StatusOK, todo)
+			}
 		})
 		//删除
 		v1Group.DELETE("/todo/:id", func(c *gin.Context) {
+			id := strings.TrimPrefix(c.Param("id"), ":") //奇奇怪怪去除冒号
+
+			if err = DB.Debug().Where("id=?", id).Delete(Todo{}).Error; err != nil {
+				c.JSON(http.StatusOK, err.Error())
+				return
+			} else {
+				c.JSON(http.StatusOK, gin.H{id: "deleted"})
+			}
 
 		})
 	}
