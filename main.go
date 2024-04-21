@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+
 	//创建数据库
 	//连接数据库
 	err := dao.InitMYSQL()
