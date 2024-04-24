@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"ToolWeb/conf"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -12,7 +13,9 @@ var (
 // InitMySQL
 
 func InitMYSQL() (err error) {
-	DB, err = gorm.Open("mysql", "root:jh529529@(localhost)/todolist?charset=utf8mb4&parseTime=True&loc=Local")
+	config := conf.InitConf()
+
+	DB, err = gorm.Open("mysql", config.SqlConn)
 	if err != nil {
 		return
 

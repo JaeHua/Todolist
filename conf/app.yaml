@@ -1,0 +1,8 @@
+app:
+  name: ToolWeb
+  port: :3030
+  mode: release
+
+mysql:
+  conn: root:123456@tcp(47.115.213.254:3310)/todolist?charset=utf8mb4&parseTime=true&loc=Local
+

@@ -1,7 +1,7 @@
 package model
 
 import (
-	"JTools/dao"
+	"ToolWeb/dao"
 )
 
 // Todo module

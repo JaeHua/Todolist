@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"JTools/model"
+	"ToolWeb/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"

@@ -1,13 +1,18 @@
 package main
 
 import (
-	"JTools/dao"
-	"JTools/model"
-	"JTools/router"
+	"ToolWeb/conf"
+	"ToolWeb/dao"
+	"ToolWeb/model"
+	"ToolWeb/router"
+	"fmt"
 )
 
 func main() {
+	//初始化配置
+	config := conf.InitConf()
 
+	fmt.Printf(config.AppConf.Port)
 	//创建数据库
 	//连接数据库
 	err := dao.InitMYSQL()
@@ -25,5 +30,5 @@ func main() {
 	r := router.SetupRouter()
 
 	//运行服务
-	r.Run()
+	r.Run(config.AppConf.Port)
 }

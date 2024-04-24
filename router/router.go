@@ -1,7 +1,7 @@
 package router
 
 import (
-	"JTools/controller"
+	"ToolWeb/controller"
 	"github.com/gin-gonic/gin"
 )
 
